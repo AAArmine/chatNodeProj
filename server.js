@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
   });
   socket.on("chatMsg", (m) => {
     const user = getCurrentUser(socket.id);
-    io.emit("message", formatMessage(user.username, m));
+    io.emit("message", formatMessage(user?.username, m));
   });
   // Runs when client disconnects
   socket.on("disconnect", () => {
