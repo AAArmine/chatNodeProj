@@ -1,62 +1,63 @@
+const express = require("express");
 const path = require("path");
 const http = require("http");
-const express = require("express");
 const socketio = require("socket.io");
 const formatMessage = require("./utils/messages");
-const { userJoin, getCurrentUser, getRoomUsers, userLeave } = require("./utils/users");
+const bodyParser = require("body-parser");
+const { userJoin, userLeave, getRoomUsers } = require("./utils/users");
 
 const app = express();
 const server = http.createServer(app);
-
 const io = socketio(server);
-//set static folder
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(express.static(path.join(__dirname, "public")));
-
-
+// app.get("/chat.html", (req, res) => {
+//   // Render the chat.html page
+//   res.sendFile(path.join(__dirname, "public", "chat.html"));
+// });
+app.post("/chat.html", (req, res) => {
+  const username = req.body.username;
+  const room = req.body.room;
+  res.redirect(`/chat.html?username=${username}&room=${room}`);
+});
 
 io.on("connection", (socket) => {
-  socket.on("joinRoom", ({ username, room }) => {
-    const user = userJoin(socket.id, username, room);
+  socket.on("joinRoom", (userData) => {
+    const user = userJoin(socket.id, userData.username, userData.room);
     socket.join(user.room);
-    socket.emit("message", formatMessage("BOT", "welcome to this chat"));
-    //to all the users exept the user which triggers
+    socket.emit("message", formatMessage("BOT", `Welcome ${user.username}!`));
     socket.broadcast
       .to(user.room)
-      .emit(
-        "message",
-        formatMessage("BOT", `${user.username} has just joined!`)
-      );
-    // Send users and room info
-    io.to(user.room).emit("roomUsers", {
-      room: user.room,
-      users: getRoomUsers(user.room),
-    });
+      .emit("message", formatMessage("BOT", `${user.username} has joined!`));
+
+    io.to(user.room).emit("usersInRoom", {
+      room:user.room,
+      usersList: getRoomUsers(user.room),
+    }); 
   });
-  socket.on("chatMsg", (m) => {
-    const user = getCurrentUser(socket.id);
-    io.emit("message", formatMessage(user?.username, m));
+
+  socket.on("chatMsg", (data) => {
+    io.emit("message", formatMessage(data.username, data.msg));
   });
-  // Runs when client disconnects
   socket.on("disconnect", () => {
     const user = userLeave(socket.id);
-
     if (user) {
-      io.to(user.room).emit(
+      io.emit(
         "message",
-        formatMessage("BOT:", `${user.username} has left the chat`)
+        formatMessage("BOT", `${user.username} has just left!`)
       );
+       io.to(user.room).emit("usersInRoom", {
+         room: user.room,
+         usersList: getRoomUsers(user.room),
+       }); 
 
-      // Send users and room info
-      io.to(user.room).emit("roomUsers", {
-        room: user.room,
-        users: getRoomUsers(user.room),
-      });
     }
   });
 });
 
-const PORT = process.env.PORT || 3000;
-
+const PORT = 3000;
 server.listen(PORT, () => {
-  console.log(`server is running on port ${PORT}`);
+  console.log(`Server listens to the port ${PORT}`);
 });

@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 		<link rel="stylesheet" href="css/style.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
 		<title>Ba-chat-A</title>
 	</head>
 	<body>
@@ -13,7 +14,7 @@
 				<h1><div><img class='chat-icon' src="icons/eyes.gif" alt="chatbox"></div> Ba-CHAT-a</h1>
 			</header>
 			<main class="login-main">
-				<form id="enter-chat">
+				<form id="enter-chat" action="chat.html" method="POST">
 					<div class="form-control">
 						<label for="username">Username</label>
 						<input
@@ -21,6 +22,16 @@
 							name="username"
 							id="username"
 							placeholder="Enter username..."
+							required
+						/>
+					</div>
+					<div class="form-control">
+						<label for="password">Password</label>
+						<input
+							type="password"
+							name="password"
+							id="password"
+							placeholder="Enter password..."
 							required
 						/>
 					</div>
@@ -40,6 +51,7 @@
 				<img class='chat-gif' src="icons/animated.gif" alt="chatbox">
 			</main>
 		</div>
-		<script src="js/enter.js"></script>
+		<!-- <script src="/socket.io/socket.io.js"></script> -->
+		<script src="js/login.js"></script>
 	</body>
 </html>

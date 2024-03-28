@@ -1,4 +1,4 @@
-const moment = require('moment')
+const moment = require("moment")
 
 const formatMessage=(username, text)=>{
     return {
@@ -7,4 +7,4 @@ const formatMessage=(username, text)=>{
         time:moment().format('h:mm a')
     }
 }
-module.exports= formatMessage
+module.exports = formatMessage;
