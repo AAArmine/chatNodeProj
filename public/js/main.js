@@ -64,3 +64,4 @@ socket.on("redirect", (data) => {
      window.location.href = data.url;
 
 });
+
