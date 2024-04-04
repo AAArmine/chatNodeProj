@@ -55,13 +55,19 @@ function outputUsersList(users) {
 document.getElementById("leave-btn").addEventListener("click", () => {
   const leaveRoom = confirm("Are you sure you want to leave the chatroom?");
   if (leaveRoom) {
-    window.location = "../index.html";
+    window.location = "../";
   }
 });
 
 socket.on("redirect", (data) => {
-    alert(data.msg);
-     window.location.href = data.url;
-
+  alert(data.msg);
+  window.location.href = data.url;
 });
 
+function preventBack() {
+  window.history.forward();
+}
+setTimeout("preventBack()", 0);
+window.onunload = function () {
+  null;
+};
